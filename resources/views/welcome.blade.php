@@ -1,100 +1,93 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
-
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Nunito', sans-serif;
-                font-weight: 200;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 13px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div id="app" class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" v-model="user.name" class="form-control">
                 </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Laravel
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" v-model="user.email" class="form-control">
                 </div>
-
-                <div class="links">
-                    <a href="https://laravel.com/docs">Docs</a>
-                    <a href="https://laracasts.com">Laracasts</a>
-                    <a href="https://laravel-news.com">News</a>
-                    <a href="https://blog.laravel.com">Blog</a>
-                    <a href="https://nova.laravel.com">Nova</a>
-                    <a href="https://forge.laravel.com">Forge</a>
-                    <a href="https://vapor.laravel.com">Vapor</a>
-                    <a href="https://github.com/laravel/laravel">GitHub</a>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" v-model="user.password" class="form-control">
                 </div>
+                <button class="btn btn-primary" @click="store">Save</button>
+            </div>
+            <div class="col-md-8">
+                <table class="table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th width="150">Actions</th>
+                    </tr>
+                    <tr v-for="user in users">
+                        <td>@{{ user.id }}</td>
+                        <td>@{{ user.name }}</td>
+                        <td>@{{ user.email }}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm">Edit</button>
+                            <button class="btn btn-danger btn-sm">Del</button>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
-    </body>
+    </div>
+
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js">
+    </script>
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue',
+                users: [],
+                user: {
+                    name: '',
+                    email: '',
+                    password: ''
+                }
+            },
+            created() {
+                this.index();
+            },
+            methods: {
+                index() {
+                    axios.get('/api/user')
+                    .then( res => this.users = res.data.users)
+                },
+                store() {
+                    var name = this.user.name;
+                    var email = this.user.email;
+                    var password = this.user.password;
+                    axios.post('/api/user', {
+                        name: name,
+                        email: email,
+                        password: password
+                    })
+                    .then(res => {
+                        this.index();
+                        this.user = { name: '', email: '', password: '' }
+                    })
+                }
+            }
+        });
+    </script>
+</body>
 </html>
